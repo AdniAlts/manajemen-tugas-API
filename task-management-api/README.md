@@ -1,59 +1,196 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
+RESTful API untuk manajemen tugas pribadi dibangun dengan Laravel & PostgreSQL.
 
-## About Laravel
+## Tech Stack
+- Laravel (v12)
+- PostgreSQL
+- Laravel Sanctum
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Prerequisites
+- PHP >= 8.2
+- Composer
+- PostgreSQL
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
+1. Clone repository
+2. `composer install`
+3. `cp .env.example .env`
+4. `php artisan key:generate`
+5. Setup database credentials di `.env`
+6. `php artisan migrate`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Environment Variables
+Tabel berikut berisi environment variables utama yang perlu disesuaikan pada file `.env`:
 
-## Learning Laravel
+| Variable | Description | Default / Example |
+|----------|-------------|-------------------|
+| `APP_NAME` | Nama aplikasi | TaskManagementAPI |
+| `APP_ENV` | Environment berjalan | local |
+| `APP_KEY` | Kunci enkripsi aplikasi | - |
+| `APP_DEBUG` | Mode debug (true/false) | true |
+| `APP_URL` | Base URL aplikasi | http://localhost |
+| `DB_CONNECTION` | Driver database relasional | pgsql |
+| `DB_HOST` | Host database server | 127.0.0.1 |
+| `DB_PORT` | Port database server | 5432 |
+| `DB_DATABASE` | Nama database | task_management |
+| `DB_USERNAME` | Username database | postgres |
+| `DB_PASSWORD` | Password database | password |
+| `CACHE_STORE` | Session / Cache driver | database |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## API Endpoints
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/tasks` | Get semua task milik user (paginated) |
+| POST | `/api/tasks` | Buat task baru |
+| GET | `/api/tasks/{id}` | Get detail task berdasarkan UUID |
+| PUT | `/api/tasks/{id}` | Update task berdasarkan UUID |
+| DELETE | `/api/tasks/{id}` | Hapus (soft-delete) task |
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Status & Priority Values
+- **Status**: `pending` | `in_progress` | `completed`
+- **Priority**: `low` | `medium` | `high`
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Request & Response Examples
+> ⭐ **Penting**: Semua request di atas membutuhkan Header `Authorization: Bearer {token}` & `Accept: application/json`.
 
-## Contributing
+### 1. POST `/api/tasks`
+Membuat tugas baru.
+**Request:**
+```json
+{
+  "title": "Belajar Laravel",
+  "description": "Pelajari konsep dasar Laravel API",
+  "priority": "high",
+  "due_date": "2026-12-31"
+}
+```
+**Response (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Task created successfully",
+  "data": {
+    "id": "18f9bd2a-abcd-4xyz-1234-56789oklhjkl",
+    "title": "Belajar Laravel",
+    "description": "Pelajari konsep dasar Laravel API",
+    "status": "pending",
+    "priority": "high",
+    "due_date": "2026-12-31T00:00:00.000000Z",
+    "completed_at": null,
+    "is_overdue": false,
+    "created_at": "2026-03-01T10:50:00.000000Z",
+    "updated_at": "2026-03-01T10:50:00.000000Z"
+  },
+  "errors": null
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. GET `/api/tasks`
+Mengambil semua tugas pengguna dengan penomoran halaman otomatis.
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Tasks retrieved successfully",
+  "data": [
+    {
+      "id": "18f9bd2a-abcd-4xyz-1234-56789oklhjkl",
+      "title": "Belajar Laravel",
+      "...": "..."
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 10,
+    "total": 1,
+    "last_page": 1
+  }
+}
+```
 
-## Code of Conduct
+### 3. GET `/api/tasks/{id}`
+Menampilkan detail tugas spesifik.
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Task retrieved successfully",
+  "data": {
+    "id": "18f9bd2a-abcd-4xyz-1234-56789oklhjkl",
+    "title": "Belajar Laravel",
+    "...": "..."
+  },
+  "errors": null
+}
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Response (404 Not Found):**
+```json
+{
+  "success": false,
+  "message": "Task tidak ditemukan",
+  "data": null,
+  "errors": null
+}
+```
 
-## Security Vulnerabilities
+### 4. PUT `/api/tasks/{id}`
+Mengupdate informasi dari sebuah task. Update besifat parsial, tidak wajib semua field diisi kecuali ingin diubah.  
+*Tip: Mengubah status ke `"completed"` akan secara otomatis membangkitkan `"completed_at": datetime_sekarang.*
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Request:**
+```json
+{
+  "status": "completed"
+}
+```
 
-## License
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Task updated successfully",
+  "data": {
+    "id": "18f9bd2a-abcd-4xyz-1234-56789oklhjkl",
+    "title": "Belajar Laravel",
+    "status": "completed",
+    "completed_at": "2026-03-01T10:55:00.000000Z",
+    "...": "..."
+  },
+  "errors": null
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. DELETE `/api/tasks/{id}`
+Menghapus tugas (soft deletes akan terjadi di database namun tak akan muncul lagi pada response REST API).
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Task deleted successfully",
+  "data": null,
+  "errors": null
+}
+```
+
+### Example 422 Validation Error
+**Response (422 Unprocessable Entity):**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "data": null,
+  "errors": {
+    "priority": [
+      "Prioritas tidak valid (low, medium, high)."
+    ]
+  }
+}
+```

@@ -14,9 +14,9 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Pastikan user hanya bisa update task miliknya
-        // (asumsi route parameter 'task' disuntik via route model binding)
-        $task = $this->route('task');
+        $taskId = $this->route('task');
+        $task = \App\Models\Task::find($taskId);
+
         return $task && $this->user()->id === $task->user_id;
     }
 
