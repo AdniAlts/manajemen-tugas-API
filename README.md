@@ -57,8 +57,7 @@ Tabel berikut berisi environment variables utama yang perlu disesuaikan pada fil
 
 ---
 
-## Request & Response Examples
-> ⭐ **Penting**: Semua request di atas membutuhkan Header `Authorization: Bearer {token}` & `Accept: application/json`.
+> ⭐ **Penting**: Semua request di atas membutuhkan Header `Accept: application/json`.
 
 ### 1. POST `/api/tasks`
 Membuat tugas baru.

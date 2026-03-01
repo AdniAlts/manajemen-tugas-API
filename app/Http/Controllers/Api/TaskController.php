@@ -23,7 +23,7 @@ class TaskController extends BaseController
      */
     public function index(Request $request)
     {
-        $tasks = $this->taskService->getAll($request->user());
+        $tasks = $this->taskService->getAll();
         return new TaskCollection($tasks);
     }
 
@@ -32,7 +32,7 @@ class TaskController extends BaseController
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = $this->taskService->create($request->user(), $request->validated());
+        $task = $this->taskService->create($request->validated());
         return $this->sendSuccess(new TaskResource($task), 'Task created successfully', 201);
     }
 
@@ -41,7 +41,7 @@ class TaskController extends BaseController
      */
     public function show(Request $request, string $id)
     {
-        $task = $this->taskService->getById($request->user(), $id);
+        $task = $this->taskService->getById($id);
         return $this->sendSuccess(new TaskResource($task), 'Task retrieved successfully');
     }
 
@@ -50,7 +50,7 @@ class TaskController extends BaseController
      */
     public function update(UpdateTaskRequest $request, string $id)
     {
-        $task = $this->taskService->getById($request->user(), $id);
+        $task = $this->taskService->getById($id);
         $task = $this->taskService->update($task, $request->validated());
 
         return $this->sendSuccess(new TaskResource($task), 'Task updated successfully');
@@ -61,7 +61,7 @@ class TaskController extends BaseController
      */
     public function destroy(Request $request, string $id)
     {
-        $task = $this->taskService->getById($request->user(), $id);
+        $task = $this->taskService->getById($id);
         $this->taskService->delete($task);
 
         return $this->sendSuccess(null, 'Task deleted successfully');

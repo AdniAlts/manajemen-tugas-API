@@ -10,27 +10,27 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class TaskService
 {
     /**
-     * Ambil semua task milik user (paginate 10 per page).
+     * Ambil semua task (paginate 10 per page).
      */
-    public function getAll(User $user): LengthAwarePaginator
+    public function getAll(): LengthAwarePaginator
     {
-        return $user->tasks()->latest()->paginate(10);
+        return Task::latest()->paginate(10);
     }
 
     /**
-     * Ambil task by id milik user (throws ModelNotFoundException jika tidak ada).
+     * Ambil task by id (throws ModelNotFoundException jika tidak ada).
      */
-    public function getById(User $user, string $id): Task
+    public function getById(string $id): Task
     {
-        return $user->tasks()->findOrFail($id);
+        return Task::findOrFail($id);
     }
 
     /**
-     * Buat task baru untuk user.
+     * Buat task baru.
      */
-    public function create(User $user, array $data): Task
+    public function create(array $data): Task
     {
-        return $user->tasks()->create($data);
+        return Task::create($data);
     }
 
     /**
