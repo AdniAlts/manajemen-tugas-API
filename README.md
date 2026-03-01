@@ -6,7 +6,6 @@ RESTful API untuk manajemen tugas pribadi dibangun dengan Laravel & PostgreSQL.
 ## Tech Stack
 - Laravel (v12)
 - PostgreSQL
-- Laravel Sanctum
 
 ## Prerequisites
 - PHP >= 8.2
